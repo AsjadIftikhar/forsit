@@ -22,6 +22,7 @@ class Product(Base):
     name = Column(String, index=True)
     description = Column(String)
     price = Column(Float)
+    margin = Column(Float)
     stock = Column(Integer)
 
     category_id = Column(Integer, ForeignKey("categories.id"))
@@ -37,6 +38,7 @@ class Sale(Base):
     id = Column(Integer, primary_key=True, index=True)
     sale_date = Column(DateTime, default=datetime.utcnow)
     quantity = Column(Integer)
+    total = Column(Float)
     revenue = Column(Float)
 
     product_id = Column(Integer, ForeignKey("products.id"))
