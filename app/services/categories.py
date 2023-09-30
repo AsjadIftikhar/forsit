@@ -4,7 +4,7 @@ from app.serializers.categories import CategoryCreate, CategoryUpdate
 
 
 def service_create_category(db: Session, category: CategoryCreate):
-    db_category = Category(**category.dict())
+    db_category = Category(**category.model_dump())
     db.add(db_category)
     db.commit()
     db.refresh(db_category)
@@ -20,7 +20,7 @@ def service_update_category(db: Session, category: Category, category_update: Ca
     :param category_update: Updated category information
     :return: Updated category
     """
-    for key, value in category_update.dict().items():
+    for key, value in category_update.model_dump().items():
         setattr(category, key, value)
     db.commit()
     db.refresh(category)

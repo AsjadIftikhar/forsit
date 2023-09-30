@@ -7,6 +7,7 @@ class ProductCreate(BaseModel):
     name: str
     description: str
     price: float
+    stock: int
     category_id: int
 
 
@@ -14,6 +15,7 @@ class ProductUpdate(BaseModel):
     name: str
     description: str
     price: float
+    stock: int
     category_id: int
 
 
@@ -22,4 +24,9 @@ class ProductRead(BaseModel):
     name: str
     description: str
     price: float
+    stock: int
     category: CategoryRead
+
+
+class ProductUpdateStock(BaseModel):
+    stock: int
