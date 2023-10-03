@@ -17,6 +17,40 @@ class TimeIntervals(str, Enum):
     yearly = "yearly"
 
 
+def selector_compare_revenue_by_date_range(db: Session, start_date1: datetime, end_date1: datetime,
+                                           start_date2: datetime, end_date2: datetime):
+    total_revenue1 = db.query(func.sum(Sale.revenue)).filter(
+        Sale.sale_date >= start_date1,
+        Sale.sale_date <= end_date1
+    ).scalar()
+
+    total_revenue2 = db.query(func.sum(Sale.revenue)).filter(
+        Sale.sale_date >= start_date2,
+        Sale.sale_date <= end_date2
+    ).scalar()
+
+    return {
+        "revenue_range_1": total_revenue1 or 0.0,
+        "revenue_range_2": total_revenue2 or 0.0,
+    }
+
+
+# Selector for comparing revenue between two categories
+def selector_compare_revenue_by_categories(db: Session, category_id1: int, category_id2: int):
+    total_revenue1 = db.query(func.sum(Sale.revenue)).join(Sale.product).filter(
+        Product.category_id == category_id1
+    ).scalar()
+
+    total_revenue2 = db.query(func.sum(Sale.revenue)).join(Sale.product).filter(
+        Product.category_id == category_id2
+    ).scalar()
+
+    return {
+        "revenue_category_1": total_revenue1 or 0.0,
+        "revenue_category_2": total_revenue2 or 0.0,
+    }
+
+
 def selector_calculate_revenue_by_interval(db: Session, interval: TimeIntervals):
     today = datetime.utcnow()
     start_date = None
