@@ -1,7 +1,46 @@
 from sqlalchemy.orm import Session
 from app.database.models import Sale, Product
-from datetime import datetime
 from typing import Optional
+
+from sqlalchemy import func
+from enum import Enum
+
+from datetime import datetime, timedelta
+
+from fastapi import HTTPException
+
+
+class TimeIntervals(str, Enum):
+    daily = "daily"
+    weekly = "weekly"
+    monthly = "monthly"
+    yearly = "yearly"
+
+
+def selector_calculate_revenue_by_interval(db: Session, interval: TimeIntervals):
+    today = datetime.utcnow()
+    start_date = None
+    end_date = today
+
+    if interval == TimeIntervals.daily:
+        start_date = today - timedelta(days=1)
+    elif interval == TimeIntervals.weekly:
+        start_date = today - timedelta(weeks=1)
+    elif interval == TimeIntervals.monthly:
+        start_date = today - timedelta(days=30)  # Approximate for a month
+    elif interval == TimeIntervals.yearly:
+        start_date = today - timedelta(days=365)  # Approximate for a year
+
+    if not start_date:
+        raise HTTPException(status_code=400, detail="Invalid interval")
+
+    # Query the database to calculate revenue within the specified interval
+    total_revenue = db.query(func.sum(Sale.revenue)).filter(
+        Sale.sale_date >= start_date,
+        Sale.sale_date <= end_date
+    ).scalar()
+
+    return total_revenue or 0.0
 
 
 def selector_get_sales_by_filters(
