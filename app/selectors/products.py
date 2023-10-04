@@ -2,6 +2,8 @@ from sqlalchemy.orm import Session
 
 from app.database.models import Product
 
+from sqlalchemy.orm import joinedload
+
 
 def selector_get_products(db: Session, skip: int = 0, limit: int = 10):
     """
@@ -12,7 +14,14 @@ def selector_get_products(db: Session, skip: int = 0, limit: int = 10):
     :param limit: Maximum number of records to return (for pagination)
     :return: List of Product models
     """
-    return db.query(Product).offset(skip).limit(limit).all()
+    return (
+        db.query(Product)
+        .filter(Product.is_deleted == False)
+        .offset(skip)
+        .limit(limit)
+        .options(joinedload(Product.category))
+        .all()
+    )
 
 
 def selector_get_product(db: Session, product_id: int):
@@ -23,4 +32,9 @@ def selector_get_product(db: Session, product_id: int):
     :param product_id: ID of the product to retrieve
     :return: Product model if found, None if not found
     """
-    return db.query(Product).filter(Product.id == product_id).first()
+    return (
+        db.query(Product)
+        .filter(Product.id == product_id, Product.is_deleted == False)
+        .options(joinedload(Product.category))
+        .first()
+    )

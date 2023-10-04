@@ -37,6 +37,6 @@ def service_delete_product(db: Session, product: Product):
     :param product: Product model to delete
     :return: Deleted product
     """
-    db.delete(product)
+    product.deleted = True
     db.commit()
     return product

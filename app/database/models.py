@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
-
 from datetime import datetime
+
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, CheckConstraint, Boolean
+from sqlalchemy.orm import relationship
 
 from app.database.database import Base
 
@@ -21,9 +21,10 @@ class Product(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
     description = Column(String)
-    price = Column(Float)
+    price = Column(Float, CheckConstraint('price > 0.0', name='check_price_positive'))
     margin = Column(Float)
     stock = Column(Integer)
+    is_deleted = Column(Boolean, default=False)
 
     category_id = Column(Integer, ForeignKey("categories.id"))
     category = relationship("Category", back_populates="products")
@@ -36,7 +37,7 @@ class Sale(Base):
     __tablename__ = "sales"
 
     id = Column(Integer, primary_key=True, index=True)
-    sale_date = Column(DateTime, default=datetime.utcnow)
+    sale_date = Column(DateTime, default=datetime.utcnow, index=True)
     quantity = Column(Integer)
     total = Column(Float)
     revenue = Column(Float)
