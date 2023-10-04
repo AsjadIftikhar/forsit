@@ -4,12 +4,18 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.database.models import Category, Product, Sale, InventoryTracking
 from datetime import datetime, timedelta
+import os
+from dotenv import load_dotenv
 
 # Create a Faker instance for generating random data
 fake = Faker()
 
-# Define your database connection URL
-database_url = "postgresql://postgres:54321@localhost/forsit_db"
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Retrieve the database URL from the environment
+database_url = os.getenv("DATABASE_URL")
 
 # Create a SQLAlchemy engine and session
 engine = create_engine(database_url)
